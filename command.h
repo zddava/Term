@@ -6,4 +6,4 @@ enum COMMAND
   SSH
 };
 
-void usage(enum COMMAND cmd);
+void usage();

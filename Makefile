@@ -1,5 +1,5 @@
 TARGET 						= t
-OBJS 							= main.c param.c
+OBJS 						= main.c command.c
 
 all: $(TARGET)
 
