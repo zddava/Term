@@ -4,7 +4,11 @@
 #include "command.h"
 #include "util.h"
 
-void usage_pack() {}
+void usage_pack()
+{
+  outputln("Usage: t pack [-d] -f FILENAME.[tar|tar.gz|tar.bz2|gz|bz2|zip|xz|bz] ...");
+  // -d 删除源文件
+}
 
 void usage_unpack() {}
 
@@ -14,25 +18,45 @@ void help_unpack() {}
 
 int invoke_pack(int argc, char *argv[])
 {
-  char optStr[] = "ab:";
+  char optstr[] = "df:";
   int c;
 
-  while ((c = getopt(argc, argv, optStr)) != -1)
+  int delfile = 0;
+  char *packfile = NULL;
+
+  while ((c = getopt(argc, argv, optstr)) != -1)
   {
-    printf("optind: %d\n", optind);
     switch (c)
     {
-    case 'a':
-      printf("-a\n");
+    case 'd':
+      delfile = 1;
       break;
-    case 'b':
-      printf("-b: %s\n", optarg);
+    case 'f':
+      packfile = optarg;
       break;
     case '?':
-      printf("arg:%s\n", argv[optopt]);
-      break;
+      return EXIT_WRONG_USAGE;
     }
   }
+
+  char suffix[10];
+  char *filename = malloc(strlen(packfile));
+  if (filename == NULL)
+  {
+    return EXIT_FAILURE;
+  }
+
+  int ret = filesuffix(packfile, suffix, filename);
+  if (ret == EXIT_SUCCESS)
+  {
+    outputln("%s", filename);
+    outputln("%s", suffix);
+  }
+  else
+  {
+  }
+
+  free(filename);
 }
 
 int invoke_unpack(int argc, char *argv[]) {}

@@ -34,3 +34,33 @@ char *lowerstr(char str[])
 
     return result;
 }
+
+int filesuffix(char *fullname, char *suffix, char *filename)
+{
+    if ((NULL == fullname) || (NULL == suffix) || (NULL == filename))
+    {
+        return EXIT_FAILURE;
+    }
+
+    char *index = strrchr(fullname, '.');
+    if (NULL == index)
+    {
+        return EXIT_FAILURE;
+    }
+
+    int namelen = strlen(fullname) - strlen(index);
+    int extlen = strlen(index) - 1;
+    outputln("fulllen: %ld", strlen(fullname));
+    outputln("namelen: %d", namelen);
+    outputln("extlen: %d", extlen);
+    if (extlen > 0)
+    {
+        memcpy(suffix, index + 1, extlen);
+        memcpy(filename, fullname, namelen);
+        return EXIT_SUCCESS;
+    }
+    else
+    {
+        return EXIT_FAILURE;
+    }
+}
