@@ -6,7 +6,8 @@
   printf("\n");
 #define linefeed() printf("\n");
 
-void *mnalloc(int cnt, size_t size);
+void *acmalloc(size_t size);
+void acfree();
 
 char *upperstr(char str[]);
 char *lowerstr(char str[]);

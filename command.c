@@ -3,62 +3,58 @@
 #include "command.h"
 #include "util.h"
 
+struct COMMAND
+{
+    char *name;
+    int (*handler)(int, char *[]);
+    void (*helper)(void);
+    void (*usage)(void);
+};
+
 struct COMMAND commands[] = {
     {
-        .command = "help",
-        .invoker = invoke_help,
+        .name = "help",
+        .handler = invoke_help,
         .helper = help_help,
         .usage = usage_help,
     },
     {
-        .command = "pack",
-        .invoker = invoke_pack,
+        .name = "pack",
+        .handler = invoke_pack,
         .helper = help_pack,
         .usage = usage_pack,
     },
     {
-        .command = "unpack",
-        .invoker = invoke_unpack,
+        .name = "unpack",
+        .handler = invoke_unpack,
         .helper = help_unpack,
         .usage = usage_unpack,
     },
     {
-        .command = "ssh",
-        .invoker = invoke_ssh,
+        .name = "ssh",
+        .handler = invoke_ssh,
         .helper = help_ssh,
         .usage = usage_ssh,
     },
     {
-        .command = "md5", // md5加密，支持字符串和文件
+        .name = "md5", // md5加密，支持字符串和文件
     },
     {
-        .command = "base64", // base64加解密
+        .name = "base64", // base64加解密
     },
     {
-        .command = "ts", // 时间戳转换
+        .name = "url", // urlencode
+    },
+    {
+        .name = "ts", // 时间戳转换
     },
 };
-
-int (*get_invoker(char *command))(int, char *[])
-{
-    for (int i = 0; i < sizeof(commands) / sizeof(struct COMMAND); i++)
-    {
-        if (strcmp(command, commands[i].command) != 0)
-        {
-            continue;
-        }
-
-        return commands[i].invoker;
-    }
-
-    return NULL;
-}
 
 struct COMMAND *get_command(char *command)
 {
     for (int i = 0; i < sizeof(commands) / sizeof(struct COMMAND); i++)
     {
-        if (strcmp(command, commands[i].command) != 0)
+        if (strcmp(command, commands[i].name) != 0)
         {
             continue;
         }
@@ -75,7 +71,7 @@ void usage()
     int len = sizeof(commands) / sizeof(struct COMMAND);
     for (int i = 0; i < len; i++)
     {
-        output(i < len - 1 ? "%s|" : "%s", commands[i].command);
+        output(i < len - 1 ? "%s|" : "%s", commands[i].name);
     }
     outputln(") [command args]");
 }
@@ -89,7 +85,7 @@ int invoke(char *command, int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    int retval = (command_info->invoker)(argc, argv);
+    int retval = (command_info->handler)(argc, argv);
 
     switch (retval)
     {
@@ -110,7 +106,7 @@ void usage_help()
     int len = sizeof(commands) / sizeof(struct COMMAND);
     for (int i = 0; i < len; i++)
     {
-        output(i < len - 1 ? "%s|" : "%s", commands[i].command);
+        output(i < len - 1 ? "%s|" : "%s", commands[i].name);
     }
     linefeed();
 }

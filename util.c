@@ -4,6 +4,31 @@
 #include <ctype.h>
 #include "util.h"
 
+static __thread void *pointers[20];
+static __thread int pointer_cnt;
+
+void *acmalloc(size_t size)
+{
+    void *p = malloc(size);
+    if (p == NULL)
+    {
+        outputln("memory allocate error");
+    }
+
+    pointers[pointer_cnt++] = p;
+    return p;
+}
+
+void acfree()
+{
+    for (int i = 0; i < pointer_cnt; i++)
+    {
+        free(pointers[i]);
+    }
+
+    pointer_cnt = 0;
+}
+
 void *mnalloc(int cnt, size_t size)
 {
     void *p = malloc(cnt * size);
@@ -11,6 +36,8 @@ void *mnalloc(int cnt, size_t size)
     {
         outputln("memory allocate error");
     }
+
+    return p;
 }
 
 char *upperstr(char str[])

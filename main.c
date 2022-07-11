@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
 
   if (argc > 1) // command args
   {
-    cmd_argv = (char **)mnalloc((argc - 1), sizeof(char *));
+    cmd_argv = (char **)acmalloc((argc - 1) * sizeof(char *));
     if (cmd_argv == NULL)
     {
       return 1;
