@@ -50,9 +50,6 @@ int filesuffix(char *fullname, char *suffix, char *filename)
 
     int namelen = strlen(fullname) - strlen(index);
     int extlen = strlen(index) - 1;
-    outputln("fulllen: %ld", strlen(fullname));
-    outputln("namelen: %d", namelen);
-    outputln("extlen: %d", extlen);
     if (extlen > 0)
     {
         memcpy(suffix, index + 1, extlen);

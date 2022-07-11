@@ -6,8 +6,7 @@
 
 void usage_pack()
 {
-  outputln("Usage: t pack [-d] -f FILENAME.[tar|tar.gz|tar.bz2|gz|bz2|zip|xz|bz] ...");
-  // -d 删除源文件
+  outputln("Usage: t pack [-d] -f filename.[tar|tar.gz|tar.bz2|gz|bz2|zip|xz|bz] file1[,file2,file3...]");
 }
 
 void usage_unpack() {}

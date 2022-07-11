@@ -28,6 +28,15 @@ struct COMMAND commands[] = {
         .helper = help_ssh,
         .usage = usage_ssh,
     },
+    {
+        .command = "md5", // md5加密，支持字符串和文件
+    },
+    {
+        .command = "base64", // base64加解密
+    },
+    {
+        .command = "ts", // 时间戳转换
+    },
 };
 
 int (*get_invoker(char *command))(int, char *[])
