@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
   if (argc == 1)
   {
     usage();
-    return 1;
+    return EXIT_FAILURE;
   }
 
   char *command = argv[1];
@@ -19,10 +19,10 @@ int main(int argc, char *argv[])
 
   if (argc > 1) // command args
   {
-    cmd_argv = (char **)acmalloc((argc - 1) * sizeof(char *));
+    cmd_argv = (char **)mallocex((argc - 1) * sizeof(char *));
     if (cmd_argv == NULL)
     {
-      return 1;
+      return EXIT_FAILURE;
     }
 
     for (int i = 1; i < argc; i++)
