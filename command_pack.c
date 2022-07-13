@@ -54,7 +54,7 @@ int pack_bz2(char *packfile, int delfile, int filenum, char **filenames)
 
   // 判断filenames[0] 是否是目录
   // 压缩
-  // 改名
+  // 文件不存在就改名
 }
 
 int pack_gz(char *packfile, int delfile, int filenum, char **filenames)
