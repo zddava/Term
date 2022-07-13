@@ -5,31 +5,67 @@
 #include "util.h"
 
 // pack
-int pack_tar(char *packfile, int delfile, char **files)
+int pack_tar(char *packfile, int delfile, int filenum, char **filenames)
+{
+  int filearglen = allstrlen(filenum, filenames) + filenum;
+  char *fileargs = malloc(filearglen);
+  allstrcat(fileargs, " ", filenum, filenames);
+
+  char *command = malloc(strlen("tar -cvf ") + strlen(packfile) + filearglen);
+  sprintf(command, "tar -cvf %s%s", packfile, fileargs);
+
+  int retval = system(command);
+  free(command);
+  free(fileargs);
+
+  if (retval == -1)
+  {
+    return EXIT_FAILURE;
+  }
+
+  if (delfile == 1)
+  {
+    retval = allremove(filenum, filenames);
+    if (retval == EXIT_FAILURE)
+    {
+      outputln("pack: remove source files error");
+      return EXIT_FAILURE;
+    }
+  }
+
+  return EXIT_SUCCESS;
+}
+
+int pack_targz(char *packfile, int delfile, int filenum, char **filenames)
 {
 }
 
-int pack_targz(char *packfile, int delfile, char **files)
+int pack_tarbz2(char *packfile, int delfile, int filenum, char **filenames)
 {
 }
 
-int pack_tarbz2(char *packfile, int delfile, char **files)
+int pack_bz2(char *packfile, int delfile, int filenum, char **filenames)
+{
+  if (filenum > 1)
+  {
+    outputln("pack: bz2 file can only pack ONE file at a time");
+    return EXIT_WRONG_USAGE;
+  }
+
+  // 判断filenames[0] 是否是目录
+  // 压缩
+  // 改名
+}
+
+int pack_gz(char *packfile, int delfile, int filenum, char **filenames)
 {
 }
 
-int pack_bz2(char *packfile, int delfile, char **files)
+int pack_xz(char *packfile, int delfile, int filenum, char **filenames)
 {
 }
 
-int pack_gz(char *packfile, int delfile, char **files)
-{
-}
-
-int pack_xz(char *packfile, int delfile, char **files)
-{
-}
-
-int pack_zip(char *packfile, int delfile, char **files)
+int pack_zip(char *packfile, int delfile, int filenum, char **filenames)
 {
 }
 
@@ -65,7 +101,7 @@ int unpack_zip(char *packfile, int delfile)
 struct PACKER
 {
   char *name;
-  int (*packer)(char *, int, char **);
+  int (*packer)(char *, int, int, char **);
   int (*unpacker)(char *, int);
   struct PACKER *child;
 };
@@ -162,12 +198,12 @@ struct PACKER *get_packer(char *packfile)
 
 void usage_pack()
 {
-  outputln("Usage: t pack [-d] -f filename.(tar|tar.gz|tgz|tar.bz2|bz2|gz|xz|zip) file1[,file2,file3...]");
+  outputln("Usage: t pack [-d] -f packfile.(tar|tar.gz|tgz|tar.bz2|bz2|gz|xz|zip) file1[,file2,file3...]");
 }
 
 void usage_unpack()
 {
-  outputln("Usage: t unpack [-d] filename.(tar|tar.gz|tgz|tar.bz2|bz2|gz|xz|zip)");
+  outputln("Usage: t unpack [-d] packfile.(tar|tar.gz|tgz|tar.bz2|bz2|gz|xz|zip)");
 }
 
 void help_pack()
@@ -208,9 +244,15 @@ int invoke_pack(int argc, char *argv[])
     }
   }
 
+  if (packfile == NULL)
+  {
+    outputln("pack: pack file (-f) must be specified");
+    return EXIT_WRONG_USAGE;
+  }
+
   if (optind == argc)
   {
-    outputln("pack: packed files must be specified");
+    outputln("pack: source files must be specified");
     return EXIT_WRONG_USAGE;
   }
 
@@ -225,6 +267,12 @@ int invoke_pack(int argc, char *argv[])
     filenames[i - optind] = argv[i];
   }
 
+  if (anystrcmp(argc - optind, filenames) == 0)
+  {
+    outputln("pack: packed files can't be duplicated");
+    return EXIT_WRONG_USAGE;
+  }
+
   struct PACKER *packer_info = get_packer(packfile);
   if (packer_info == NULL)
   {
@@ -233,7 +281,7 @@ int invoke_pack(int argc, char *argv[])
     return EXIT_WRONG_USAGE;
   }
 
-  int ret = (packer_info->packer(packfile, delfile, filenames));
+  int ret = (packer_info->packer(packfile, delfile, argc - optind, filenames));
 
   free(filenames);
   return ret;
@@ -260,13 +308,13 @@ int invoke_unpack(int argc, char *argv[])
 
   if (optind == argc)
   {
-    outputln("unpack: unpacked file must be specified");
+    outputln("unpack: unpack file must be specified");
     return EXIT_WRONG_USAGE;
   }
 
   if (argc - optind > 1)
   {
-    outputln("unpack: support only one unpacked file");
+    outputln("unpack: support only ONE unpack file");
     return EXIT_WRONG_USAGE;
   }
 
@@ -275,7 +323,7 @@ int invoke_unpack(int argc, char *argv[])
   struct PACKER *packer_info = get_packer(unpackfile);
   if (packer_info == NULL)
   {
-    outputln("unpack: unpacking file format is not supported");
+    outputln("unpack: unpack file format is not supported");
     return EXIT_WRONG_USAGE;
   }
 

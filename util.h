@@ -12,3 +12,11 @@ char *upperstr(char str[]);
 char *lowerstr(char str[]);
 
 int filesuffix(char *fullname, char *suffix, char *filename);
+
+int anystrcmp(int num, char *strs[]);
+
+char *allstrcat(char *dest, char *dep, int num, char *strs[]);
+
+int allstrlen(int num, char *strs[]);
+
+int allremove(int num, char *filenames[]);

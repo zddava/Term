@@ -1,4 +1,3 @@
-#include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
@@ -61,4 +60,61 @@ int filesuffix(char *fullname, char *suffix, char *filename)
     {
         return EXIT_FAILURE;
     }
+}
+
+int anystrcmp(int num, char *strs[])
+{
+    if (num == 1)
+    {
+        return 1;
+    }
+
+    for (int i = 0; i < num; i++)
+    {
+        for (int j = i + 1; j < num; j++)
+        {
+            if (strcmp(strs[i], strs[j]) == 0)
+            {
+                return 0;
+            }
+        }
+    }
+
+    return 1;
+}
+
+char *allstrcat(char *dest, char *dep, int num, char *strs[])
+{
+    for (int i = 0; i < num; i++)
+    {
+        strcat(dest, dep);
+        strcat(dest, strs[i]);
+    }
+
+    return dest;
+}
+
+int allstrlen(int num, char *strs[])
+{
+    int len = 0;
+    for (int i = 0; i < num; i++)
+    {
+        len += strlen(strs[i]);
+    }
+
+    return len;
+}
+
+int allremove(int num, char *filenames[])
+{
+    int retval = EXIT_SUCCESS;
+    for (int i = 0; i < num; i++)
+    {
+        if (remove(filenames[i]) == -1)
+        {
+            retval = EXIT_FAILURE;
+        }
+    }
+
+    return retval;
 }
