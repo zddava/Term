@@ -48,6 +48,9 @@ struct COMMAND commands[] = {
     {
         .name = "ts", // 时间戳转换
     },
+    {
+        .name = "sys", // 查看系统配置
+    },
 };
 
 struct COMMAND *get_command(char *command)

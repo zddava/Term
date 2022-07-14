@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <unistd.h>
+#include <sys/stat.h>
 #include "util.h"
 
 void *mallocex(size_t size)
@@ -117,4 +119,35 @@ int allremove(int num, char *filenames[])
     }
 
     return retval;
+}
+
+int fileexists(char *filename)
+{
+    if (access(filename, F_OK) != 0)
+    {
+        return EXIT_FAILURE;
+    }
+
+    return EXIT_SUCCESS;
+}
+
+int allfileexist(int num, char *filenames[])
+{
+    for (int i = 0; i < num; i++)
+    {
+        if (access(filenames[i], F_OK) != 0)
+        {
+            return EXIT_FAILURE;
+        }
+    }
+
+    return EXIT_SUCCESS;
+}
+
+int isfolder(char *filename)
+{
+    struct stat stat_buff;
+    stat(filename, &stat_buff);
+
+    return S_ISDIR(stat_buff.st_mode);
 }

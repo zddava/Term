@@ -38,10 +38,12 @@ int pack_tar(char *packfile, int delfile, int filenum, char **filenames)
 
 int pack_targz(char *packfile, int delfile, int filenum, char **filenames)
 {
+  // TODO
 }
 
 int pack_tarbz2(char *packfile, int delfile, int filenum, char **filenames)
 {
+  // TODO
 }
 
 int pack_bz2(char *packfile, int delfile, int filenum, char **filenames)
@@ -52,50 +54,90 @@ int pack_bz2(char *packfile, int delfile, int filenum, char **filenames)
     return EXIT_WRONG_USAGE;
   }
 
-  // 判断filenames[0] 是否是目录
-  // 压缩
+  char *filename = filenames[0];
+
+  if (isfolder(filename))
+  {
+    outputln("pack: bz2 format can only pack FILE rather than FOLDER");
+    return EXIT_WRONG_USAGE;
+  }
+
+  char *command_template = "bzip2 %s %s";
+  char *command = malloc(strlen(command_template) + strlen(filename));
+  sprintf(command, command_template, delfile == 1 ? " " : "-k", filename);
+
+  int retval = system(command);
+
+  if (retval == -1)
+  {
+    return EXIT_FAILURE;
+  }
+
   // 文件不存在就改名
+  char *bz2file = malloc(strlen(filename) + strlen(".bz2"));
+  strcat(bz2file, filename);
+  strcat(bz2file, ".bz2");
+
+  if (strcmp(packfile, bz2file) != 0)
+  {
+    rename(bz2file, packfile);
+  }
+
+  free(bz2file);
+  free(command);
+
+  return EXIT_SUCCESS;
 }
 
 int pack_gz(char *packfile, int delfile, int filenum, char **filenames)
 {
+  // TODO
 }
 
 int pack_xz(char *packfile, int delfile, int filenum, char **filenames)
 {
+  // TODO
 }
 
 int pack_zip(char *packfile, int delfile, int filenum, char **filenames)
 {
+  // TODO
 }
 
 // unpack
 int unpack_tar(char *packfile, int delfile)
 {
+  // TODO
 }
 
 int unpack_targz(char *packfile, int delfile)
 {
+  // TODO
 }
 
 int unpack_tarbz2(char *packfile, int delfile)
 {
+  // TODO
 }
 
 int unpack_bz2(char *packfile, int delfile)
 {
+  // TODO
 }
 
 int unpack_gz(char *packfile, int delfile)
 {
+  // TODO
 }
 
 int unpack_xz(char *packfile, int delfile)
 {
+  // TODO
 }
 
 int unpack_zip(char *packfile, int delfile)
 {
+  // TODO
 }
 
 struct PACKER
@@ -267,6 +309,12 @@ int invoke_pack(int argc, char *argv[])
     filenames[i - optind] = argv[i];
   }
 
+  if (allfileexist(argc - optind, filenames) == 1)
+  {
+    outputln("pack: source files must all exist");
+    return EXIT_FAILURE;
+  }
+
   if (anystrcmp(argc - optind, filenames) == 0)
   {
     outputln("pack: packed files can't be duplicated");
@@ -319,6 +367,10 @@ int invoke_unpack(int argc, char *argv[])
   }
 
   char *unpackfile = argv[optind];
+  if (access(unpackfile, F_OK) != 0)
+  {
+    outputln("pack: unpack files must exist");
+  }
 
   struct PACKER *packer_info = get_packer(unpackfile);
   if (packer_info == NULL)

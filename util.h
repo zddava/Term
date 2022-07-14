@@ -20,3 +20,9 @@ char *allstrcat(char *dest, char *dep, int num, char *strs[]);
 int allstrlen(int num, char *strs[]);
 
 int allremove(int num, char *filenames[]);
+
+int fileexists(char *filename);
+
+int allfileexist(int num, char *filenames[]);
+
+int isfolder(char *filename);
